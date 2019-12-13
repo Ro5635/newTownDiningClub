@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+
+  testFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: functionTest.handler
+      Runtime: nodejs10.x
+      CodeUri: .
+      Description: >-
+        A test function
+      MemorySize: 128
+      Timeout: 60
+      ReservedConcurrentExecutions: 10
+      Environment:
+        Variables:
+          NODE_ENV: dev
