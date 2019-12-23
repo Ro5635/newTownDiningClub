@@ -2,10 +2,20 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
 
+  someExampleAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Cors:
+        AllowHeaders: "'Authorization, content-type'"
+        AllowOrigin: "'*'"
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: false # removes auth requirement from 'options' pre-flight requests
+
   testFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: functionTest.handler
+      Handler: build/functionTest.handler
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
@@ -16,3 +26,10 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: dev
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            RestApiId: "someExampleAPI"
+            Path: /
+            Method: get
