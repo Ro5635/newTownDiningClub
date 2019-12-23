@@ -1,0 +1,25 @@
+{
+  "name": "minimallambda",
+  "version": "1.0.0",
+  "description": "Some what Minimal code setup needed to get a AWS Lambda up for testing something, this is not a best practice thing, just a quick thing.",
+  "main": "src/functionName.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d build"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ro5635/bareminimumJSLambda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ro5635/bareminimumJSLambda/issues"
+  },
+  "homepage": "https://github.com/Ro5635/bareminimumJSLambda#readme"
+}
