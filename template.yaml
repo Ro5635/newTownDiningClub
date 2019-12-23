@@ -15,7 +15,7 @@ Resources:
   testFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/functionTest.handler
+      Handler: build/functionName.handler
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
