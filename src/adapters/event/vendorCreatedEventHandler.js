@@ -1,5 +1,5 @@
-import fetch from 'node-fetch';
 import { logger } from '../../infrastructure/configuration';
+import addVendorToTrelloList from '../../application/command/vendor/add_vendor_to_trello_list';
 
 export const handler = async ({ detail }) => {
   try {
@@ -7,10 +7,7 @@ export const handler = async ({ detail }) => {
     logger.debug('received event:');
     logger.debug(JSON.stringify(detail));
 
-    const { vendor } = detail;
-
-    logger.info(`CaughtEvent !!!!!`);
-
+    await addVendorToTrelloList({ vendor: detail, listName: 'newVendors' });
   } catch (error) {
     logger.error('Error caught in event handler');
     logger.error(error.message);
