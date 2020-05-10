@@ -1,8 +1,51 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+Mappings:
+  prod:
+    config:
+      newTownDiningClubAPIDomainName: newtowndiningclub-api.projects.robertcurran.uk
+
 Resources:
 
-  someExampleAPI:
+  vendorEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: vendorEventBus
+
+  newTownDiningClubServiceTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: newTownDiningClubServiceTable
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1-PK
+          AttributeType: S
+        - AttributeName: GSI1-SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI-1
+          KeySchema:
+            - AttributeName: GSI1-PK
+              KeyType: HASH
+            - AttributeName: GSI1-SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: CostCentre
+          Value: newTownDiningClubProject
+
+  newTownDiningClubAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
@@ -11,15 +54,53 @@ Resources:
         AllowOrigin: "'*'"
       Auth:
         AddDefaultAuthorizerToCorsPreflight: false # removes auth requirement from 'options' pre-flight requests
+      Domain:
+        DomainName: !FindInMap [prod, config, newTownDiningClubAPIDomainName]
+        CertificateArn: !ImportValue environmentStack--RobertCurranUkSSLCertificateEUWest1
+        Route53:
+          HostedZoneId: !ImportValue environmentStack--RobertCurranUKHostedZoneID
 
-  testFunction:
+  createVendor:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/functionName.handler
+      Handler: build/adapters/rest/vendors/createNewVendor.createVendor
       Runtime: nodejs10.x
       CodeUri: .
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref vendorEventBus
+        - DynamoDBCrudPolicy:
+            TableName: !Ref newTownDiningClubServiceTable
       Description: >-
-        A test function
+        Create a new Vendor rest resource
+      MemorySize: 128
+      Timeout: 60
+      ReservedConcurrentExecutions: 10
+      Environment:
+        Variables:
+          NODE_ENV: dev
+          NTDC_TABLE_NAME: !Ref newTownDiningClubServiceTable
+          VENDOR_EVENT_BUS_NAME: !Ref vendorEventBus
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            RestApiId: !Ref newTownDiningClubAPI
+            Path: /vendor
+            Method: POST
+
+
+  externalTriggersVendorAccepted:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: build/adapters/rest/external_trigger/vendor/vendor_set_to_accepted.vendorAccepted
+      Runtime: nodejs10.x
+      CodeUri: .
+      Policies:
+        EventBridgePutEventsPolicy:
+          EventBusName: "vendorEventBus"
+      Description: >-
+        Handles the vendor accepted webHook
       MemorySize: 128
       Timeout: 60
       ReservedConcurrentExecutions: 10
@@ -30,6 +111,9 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            RestApiId: "someExampleAPI"
-            Path: /
-            Method: get
+            RestApiId: !Ref newTownDiningClubAPI
+            Path: /webhooks/vendors/accepted
+            Method: POST
+
+
+

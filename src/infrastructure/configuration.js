@@ -1,6 +1,15 @@
 import aws from 'aws-sdk';
+import { newLogger } from '@travel-cloud/simple-lambda-logger';
+import errors from './utilities/errors';
+import validate from './utilities/joi_validation_with_throws';
 
-const { REGION } = process.env;
+const {
+  REGION,
+  NTDC_TABLE_NAME,
+  VENDOR_EVENT_BUS_NAME,
+} = process.env;
+
+const logLevel = 'DEBUG';
 const isRunningLocally = process.env.AWS_SAM_LOCAL === 'true';
 
 const corsHeaders = {
@@ -10,7 +19,12 @@ const corsHeaders = {
 };
 
 const environment = {
+  REGION,
+  NTDC_TABLE_NAME,
+  VENDOR_EVENT_BUS_NAME,
 };
+
+const logger = newLogger(logLevel);
 
 if (isRunningLocally) {
   aws.config.update({
@@ -18,7 +32,7 @@ if (isRunningLocally) {
     endpoint: 'http://dynamodb:8000/',
   });
   // Provide Local versions when running locally
-  // environment.EXAMPLE_TABLE_NAME = 'exampleTableName';
+  environment.NTDC_TABLE_NAME = 'newTownDiningClubServiceTable';
 } else {
   aws.config.update({
     region: REGION,
@@ -26,10 +40,19 @@ if (isRunningLocally) {
 }
 
 const docClient = new aws.DynamoDB.DocumentClient();
+const eventBridge = new aws.EventBridge({ apiVersion: '2015-10-07' });
+
+const utilities = {
+  validate,
+};
 
 export {
   aws,
   docClient,
+  eventBridge,
   corsHeaders,
+  logger,
+  utilities,
+  errors,
   environment,
 };

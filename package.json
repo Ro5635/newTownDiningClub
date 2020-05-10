@@ -2,11 +2,14 @@
   "name": "minimallambda",
   "version": "1.0.0",
   "description": "Some what Minimal code setup needed to get a AWS Lambda up for testing something, this is not a best practice thing, just a quick thing.",
-  "main": "src/functionName.js",
+  "main": "src",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint-fix": "eslint . --fix",
-    "build": "babel src -d build && npm run lint-fix"
+    "build": "babel src -d build && npm run lint-fix",
+    "package": "sam package --s3-bucket  robertcurran-cf-templates --s3-prefix eventBridgePlay  --region eu-west-1 --output-template-file packaged.yaml --profile robertPersonalProd",
+    "deploy": "sam deploy --template-file ./packaged.yaml --stack-name eventBridgePlay --region eu-west-1 --capabilities CAPABILITY_IAM --profile robertPersonalProd",
+    "publish": "npm run build && npm run package && npm run deploy && echo Finished!!"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
@@ -31,6 +34,11 @@
   },
   "homepage": "https://github.com/Ro5635/bareminimumJSLambda#readme",
   "dependencies": {
-    "aws-sdk": "^2.596.0"
+    "@hapi/joi": "^17.1.1",
+    "@travel-cloud/simple-lambda-logger": "^2.0.1",
+    "aws-sdk": "^2.596.0",
+    "node-fetch": "^2.6.0",
+    "request-promise": "^4.2.5",
+    "uuid": "^8.0.0"
   }
 }
