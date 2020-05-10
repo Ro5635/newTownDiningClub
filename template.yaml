@@ -115,5 +115,48 @@ Resources:
             Path: /webhooks/vendors/accepted
             Method: POST
 
+  vendorCreatedEventHandlerFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: build/adapters/event/vendorCreatedEventHandler.handler
+      Runtime: nodejs10.x
+      CodeUri: .
+      Description: >-
+        Handles the vendorCreatedEvent
+      MemorySize: 128
+      Timeout: 60
+      ReservedConcurrentExecutions: 10
+      Environment:
+        Variables:
+          NODE_ENV: dev
+
+  vendorCreatedEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Triggers the vendorCreatedEventHandler Lambda"
+      EventBusName: !Ref vendorEventBus
+      EventPattern:
+        detail:
+          type:
+            - "vendorCreated"
+      State: 'ENABLED'
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - vendorCreatedEventHandlerFunction
+              - Arn
+          Id: vendorCreatedEventHandlerFunctionV1
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Ref: vendorCreatedEventHandlerFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - vendorCreatedEventRule
+          - Arn
 
 
