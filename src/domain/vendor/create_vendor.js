@@ -12,10 +12,18 @@ const vendorDefinition = Joi.object().keys({
   contactEmail: Joi.string().required().min(1).max(300),
   contactPhone: Joi.string().required().min(1).max(30),
   michelinStars: Joi.number().integer().min(0).max(3),
+  version: Joi.number().integer().min(0),
 });
 
 const createVendor = async ({
-  vendorId = uuidv4(), name, vendorState = 'pendingReview', cuisineType, contactEmail, contactPhone, michelinStars,
+  vendorId = uuidv4(),
+  name,
+  vendorState = 'pendingReview',
+  cuisineType,
+  contactEmail,
+  contactPhone,
+  michelinStars,
+  version = 0,
 }) => validate({
   vendorId,
   name,
@@ -24,6 +32,7 @@ const createVendor = async ({
   contactEmail,
   contactPhone,
   michelinStars,
+  version,
 }, vendorDefinition);
 
 
