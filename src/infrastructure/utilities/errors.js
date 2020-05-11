@@ -7,11 +7,15 @@ class ValidationConstraintError extends Error {}
 // Persistence Errors
 class NonExistentItemError extends Error {}
 
+// Application layer Errors
+class InvalidOperationError extends Error {}
+
 const errors = {
   SecurityConstraintError,
   ValidationConstraintError,
   InvalidAuthenticationCredentialsError,
   NonExistentItemError,
+  InvalidOperationError,
 };
 
 export default errors;
