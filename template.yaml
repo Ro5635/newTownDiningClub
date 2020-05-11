@@ -115,10 +115,10 @@ Resources:
             Path: /webhooks/vendors/accepted
             Method: POST
 
-  vendorCreatedEventHandlerFunction:
+  vendorCreatedAddVendorToTrelloFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/adapters/event/vendorCreatedEventHandler.handler
+      Handler: build/adapters/event/vendorCreatedAddVendorToTrello.handler
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
@@ -143,7 +143,7 @@ Resources:
       Targets:
         - Arn:
             Fn::GetAtt:
-              - vendorCreatedEventHandlerFunction
+              - vendorCreatedAddVendorToTrelloFunction
               - Arn
           Id: vendorCreatedEventHandlerFunctionV1
 
@@ -151,7 +151,7 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
-        Ref: vendorCreatedEventHandlerFunction
+        Ref: vendorCreatedAddVendorToTrelloFunction
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn:
