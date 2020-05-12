@@ -116,7 +116,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref newTownDiningClubAPI
-            Path: /webhooks/vendors/accepted
+            Path: /webhooks/vendors
             Method: POST
 
   vendorCreatedAddVendorToTrelloFunction:
