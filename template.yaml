@@ -90,23 +90,27 @@ Resources:
             Method: POST
 
 
-  externalTriggersVendorAccepted:
+  externalTriggersVendorUpdated:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/adapters/rest/external_trigger/vendor/vendor_set_to_accepted.vendorAccepted
+      Handler: build/adapters/rest/external_trigger/vendors/vendor_state_update.vendorUpdatedWebHookHandler
       Runtime: nodejs10.x
       CodeUri: .
       Policies:
-        EventBridgePutEventsPolicy:
-          EventBusName: "vendorEventBus"
+        - EventBridgePutEventsPolicy:
+            EventBusName: "vendorEventBus"
+        - DynamoDBCrudPolicy:
+            TableName: !Ref newTownDiningClubServiceTable
       Description: >-
-        Handles the vendor accepted webHook
+        Handles the vendor updated webHook
       MemorySize: 128
       Timeout: 60
       ReservedConcurrentExecutions: 10
       Environment:
         Variables:
           NODE_ENV: dev
+          NTDC_TABLE_NAME: !Ref newTownDiningClubServiceTable
+          VENDOR_EVENT_BUS_NAME: !Ref vendorEventBus
       Events:
         Api1:
           Type: Api
