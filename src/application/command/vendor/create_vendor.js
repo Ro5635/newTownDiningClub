@@ -19,8 +19,8 @@ const createVendorCommandService = async ({
   await saveVendor(vendor);
 
   const event = {
-    ...vendor,
     type: 'vendorCreated',
+    vendor,
   };
   await publishEvent({ event });
 
