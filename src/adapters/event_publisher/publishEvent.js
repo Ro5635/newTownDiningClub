@@ -23,7 +23,6 @@ const publishEvent = async ({ event, eventBusName = VENDOR_EVENT_BUS_NAME, event
 
     await eventBridge.putEvents(params).promise();
     logger.info(`Published Event to ${eventBusName} successfully`);
-
   } catch (error) {
     logger.error('Failed to publish event!');
     logger.error(error);
