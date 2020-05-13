@@ -38,7 +38,6 @@
     "@travel-cloud/simple-lambda-logger": "^2.0.1",
     "aws-sdk": "^2.596.0",
     "node-fetch": "^2.6.0",
-    "request-promise": "^4.2.5",
     "uuid": "^8.0.0"
   }
 }
