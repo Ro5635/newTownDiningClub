@@ -166,6 +166,51 @@ Resources:
       SourceArn: !GetAtt vendorCreatedEventRule.Arn
 
 
+  sendVendorWelcomeEmailFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: build/adapters/event/send_vendor_welcome_email.handler
+      Runtime: nodejs10.x
+      CodeUri: .
+      Description: >-
+        Sends Welcome Email to Vendor
+      MemorySize: 128
+      Timeout: 60
+      ReservedConcurrentExecutions: 10
+      Environment:
+        Variables:
+          NODE_ENV: dev
+
+  newVendorAcceptedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Triggers actions in response to a new Vendor being accepted"
+      EventBusName: !Ref vendorEventBus
+      EventPattern:
+        detail:
+          type:
+            - "vendorUpdated"
+          change:
+            - "vendorState"
+          previousState:
+            - "pendingReview"
+          newState:
+            - "accepted"
+      State: 'ENABLED'
+      Targets:
+        - Arn: !GetAtt sendVendorWelcomeEmailFunction.Arn
+          Id: vendorCreatedEventHandlerFunctionV1
+
+  PermissionInvokeLambdaForSendVendorWelcomeEmailFunction:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Ref: sendVendorWelcomeEmailFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt newVendorAcceptedRule.Arn
+
+
 #  allVendorEventsLogGroup:
 #    Type: AWS::Logs::LogGroup
 #    Properties:
