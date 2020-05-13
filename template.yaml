@@ -145,22 +145,41 @@ Resources:
             - "vendorCreated"
       State: 'ENABLED'
       Targets:
-        - Arn:
-            Fn::GetAtt:
-              - vendorCreatedAddVendorToTrelloFunction
-              - Arn
+        - Arn: !GetAtt vendorCreatedAddVendorToTrelloFunction.Arn
           Id: vendorCreatedEventHandlerFunctionV1
 
-  PermissionForEventsToInvokeLambda:
+  PermissionInvokeLambdaForVendorCreatedAddVendorToTrelloFunction:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
         Ref: vendorCreatedAddVendorToTrelloFunction
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
-      SourceArn:
-        Fn::GetAtt:
-          - vendorCreatedEventRule
-          - Arn
+      SourceArn: !GetAtt vendorCreatedEventRule.Arn
+
+
+#  allVendorEventsLogGroup:
+#    Type: AWS::Logs::LogGroup
+#    Properties:
+#      LogGroupName: /projects/eventbridge/customerEvents
+#      RetentionInDays: 365
+
+# Cannot set this up through cloud formation, not amused. 😡
+# https://github.com/aws-cloudformation/aws-cloudformation-coverage-roadmap/issues/351
+#  sendAllVendorEventsToCloudWatch:
+#    Type: AWS::Events::Rule
+#    Properties:
+#      Description: 'Sends all Vendor events to cloud watch logs'
+#      EventBusName: !Ref vendorEventBus
+#      EventPattern:
+#        account:
+#          - !Ref AWS::AccountId
+#      Name: sendAllVendorEventsToCloudWatch
+#      State: 'ENABLED'
+#      Targets:
+#        - Fn::GetAtt:
+#            - allVendorEventsLogGroup
+#            - Arn
+##            !GetAtt [allCustomerEventsLogGroup, Arn]
 
 
