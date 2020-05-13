@@ -5,7 +5,7 @@ import {
 } from '../../../../infrastructure/configuration';
 import setVendorStateCommandService from '../../../../application/command/vendor/set_vendor_state';
 
-const { InvalidOperationError } = errors;
+const { InvalidOperationError, ExecutionFailedError } = errors;
 
 const extractVendorIdFromTrelloDump = ({ trelloDump }) => {
   // So turns out putting things to Trello is all sunshine and butterflys
@@ -40,7 +40,7 @@ export const vendorUpdatedWebHookHandler = async ({
   queryStringParameters = {},
 }) => {
   try {
-    console.log('Handling call to POST /webhooks/vendors');
+    logger.info('Handling call to POST /webhooks/vendors');
 
     const { source } = queryStringParameters;
     logger.info(`Using source:${source}`);
@@ -62,8 +62,21 @@ export const vendorUpdatedWebHookHandler = async ({
         statusCode: 400,
         headers: corsHeaders,
       };
+    } if (error instanceof ExecutionFailedError) {
+      logger.error('Execution failed, Application unable to satisfy request');
+      logger.error(error.message);
+      logger.error(error.stack);
+      logger.error('Returning StatusCode 500 to caller');
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+      };
     }
-    console.error(`UnKnown Error Caught In Rest Adapter, ${error}`);
+
+    logger.error('Unknown Error Caught In Rest Adapter');
+    logger.error(error.message);
+    logger.error(error.stack);
+    logger.error('Returning Status 500 to caller');
     return {
       statusCode: 500,
       headers: corsHeaders,

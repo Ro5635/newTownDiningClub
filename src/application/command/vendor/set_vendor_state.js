@@ -5,7 +5,7 @@ import applyVendorStateDomainService from '../../../domain/service/vendor/apply_
 import saveVendor from '../../../adapters/persistence/vendor_repository/save_vendor';
 import publishEvent from '../../../adapters/event_publisher/publishEvent';
 
-const { NonExistentItemError, InvalidOperationError } = errors;
+const { NonExistentItemError, InvalidOperationError, ExecutionFailedError } = errors;
 
 const publishVendorUpdatedEvent = async ({ vendor, previousVendorState }) => {
   logger.info('Publishing vendorUpdated Event');
@@ -59,7 +59,7 @@ const setVendorStateCommandService = async ({ vendorState, vendorId }) => {
     logger.error('Caught error in setVendorStateCommandService');
     logger.error(`Failed to set state:${vendorState} for vendorId:${vendorId}`);
     logger.error(error);
-    throw new Error('Unknown failure in setVendorCommandService');
+    throw new ExecutionFailedError('Unknown failure in setVendorCommandService');
   }
 };
 

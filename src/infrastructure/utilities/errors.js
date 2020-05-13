@@ -9,6 +9,8 @@ class NonExistentItemError extends Error {}
 
 // Application layer Errors
 class InvalidOperationError extends Error {}
+class ExecutionFailedError extends Error {}
+
 
 const errors = {
   SecurityConstraintError,
@@ -16,6 +18,7 @@ const errors = {
   InvalidAuthenticationCredentialsError,
   NonExistentItemError,
   InvalidOperationError,
+  ExecutionFailedError,
 };
 
 export default errors;
