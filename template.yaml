@@ -45,6 +45,10 @@ Resources:
         - Key: CostCentre
           Value: newTownDiningClubProject
 
+#
+#  REST API:
+#
+
   newTownDiningClubAPI:
     Type: AWS::Serverless::Api
     Properties:
@@ -119,10 +123,14 @@ Resources:
             Path: /webhooks/vendors
             Method: POST
 
+#
+#  Event Handler Functions
+#
+
   vendorCreatedAddVendorToTrelloFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/adapters/event/vendorCreatedAddVendorToTrello.handler
+      Handler: build/adapters/event/vendor_created_add_vendor_to_trello.handler
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
@@ -137,7 +145,7 @@ Resources:
   vendorCreatedEventRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: "Triggers the vendorCreatedEventHandler Lambda"
+      Description: "Triggers actions in response to vendorCreated Event"
       EventBusName: !Ref vendorEventBus
       EventPattern:
         detail:

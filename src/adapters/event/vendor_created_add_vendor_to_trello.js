@@ -3,17 +3,20 @@ import addVendorToTrelloList from '../../application/command/vendor/add_vendor_t
 
 export const handler = async ({ detail = {} }) => {
   try {
+    logger.info('vendorCreatedAddVendorToTrello Invoked');
     const { vendor } = detail;
-    logger.info('vendorCreatedEventHandler Called');
     logger.debug('Received vendor:');
     logger.debug(JSON.stringify(vendor));
 
     await addVendorToTrelloList({ vendor, listName: 'newVendors' });
+    logger.info('Execution of vendorCreatedAddVendorToTrello completed Successfully');
+    await logger.close();
 
   } catch (error) {
-    logger.error('Error caught in vendorCreatedAddVendorToTrello event handler');
+    logger.error('Error caught in execution of vendorCreatedAddVendorToTrello');
     logger.error(error.message);
     logger.error(error.stack);
+    await logger.close();
   }
 };
 
