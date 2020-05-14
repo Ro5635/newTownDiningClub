@@ -41,6 +41,8 @@ if (isRunningLocally) {
 
 const docClient = new aws.DynamoDB.DocumentClient();
 const eventBridge = new aws.EventBridge({ apiVersion: '2015-10-07' });
+const emailService = new aws.SES({ apiVersion: '2010-12-01' });
+const sqs = new aws.SQS({ apiVersion: '2012-11-05' });
 
 const utilities = {
   validate,
@@ -50,6 +52,8 @@ export {
   aws,
   docClient,
   eventBridge,
+  emailService,
+  sqs,
   corsHeaders,
   logger,
   utilities,
