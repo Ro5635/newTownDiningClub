@@ -19,7 +19,7 @@ const emailMessageDefinition = Joi.object().keys({
   version: Joi.number().integer().min(0),
 });
 
-const createMessage = async ({
+export const createMessage = async ({
   messageId = uuidv4(),
   vendorId,
   targetEmailAddress,
@@ -43,5 +43,14 @@ const createMessage = async ({
   version,
 }, emailMessageDefinition);
 
+export const markMessageAsDispatched = async ({ message, markDispatchedAt = Date.now() }) => ({
+  ...message,
+  messageDispatched: true,
+  messageDispatchedAt: markDispatchedAt,
+});
 
-export default createMessage;
+
+export default {
+  createMessage,
+  markMessageAsDispatched,
+};
