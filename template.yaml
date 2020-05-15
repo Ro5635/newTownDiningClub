@@ -45,6 +45,44 @@ Resources:
         - Key: CostCentre
           Value: newTownDiningClubProject
 
+  emailMessageDispatchQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      # 1209600 is 14 days in seconds
+      MessageRetentionPeriod: 1209600
+      QueueName: emailMessageDispatchQueue
+      ReceiveMessageWaitTimeSeconds: 5
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt emailMessageDispatchDeadLetterQueue.Arn
+        maxReceiveCount: 3
+      VisibilityTimeout: 90
+
+  emailMessageDispatchDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      # 1209600 is 14 days in seconds
+      MessageRetentionPeriod: 1209600
+      QueueName: emailMessageDispatchDeadLetterQueue
+      ReceiveMessageWaitTimeSeconds: 5
+      VisibilityTimeout: 90
+
+  emailMessageDispatchDeadLetterQueueDepthAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmDescription: "Alarm if queue depth increases to more than 1 messages"
+        Namespace: "AWS/SQS"
+        MetricName: "ApproximateNumberOfMessagesVisible"
+        Dimensions:
+          - Name: "QueueName"
+            Value: !GetAtt emailMessageDispatchDeadLetterQueue.QueueName
+        Statistic: "Sum"
+        Period: "300"
+        EvaluationPeriods: "2"
+        Threshold: "1"
+        ComparisonOperator: "GreaterThanThreshold"
+        AlarmActions:
+          - !ImportValue environmentStack--RobertCurranSystemNotificationTopic
+
 #
 #  REST API:
 #
