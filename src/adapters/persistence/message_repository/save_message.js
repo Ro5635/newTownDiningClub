@@ -2,30 +2,22 @@ import { logger, docClient, environment } from '../../../infrastructure/configur
 
 const { NTDC_TABLE_NAME } = environment;
 
-const messageToItem = ({
-  messageId,
-  vendorId,
-  targetEmailAddress,
-  messageHtmlBody,
-  messageTextBody,
-  messageType,
-  messageSubject,
-  version,
-}) => ({
-  PK: `Message_${messageId}`,
-  SK: `messageType_${messageType}`,
-  'GSI1-PK': `Vendor_${vendorId}`,
-  // TODO: Clean this forcing of creation time up
-  'GSI1-SK': `Message_${Date.now()}`,
-  messageId,
-  vendorId,
-  targetEmailAddress,
-  messageHtmlBody,
-  messageTextBody,
-  messageType,
-  messageSubject,
-  version,
-});
+const messageToItem = (message) => {
+  const {
+    messageId,
+    vendorId,
+    messageType,
+  } = message;
+
+  return {
+    PK: `Message_${messageId}`,
+    SK: `messageType_${messageType}`,
+    'GSI1-PK': `Vendor_${vendorId}`,
+    // TODO: Clean this forcing of creation time up
+    'GSI1-SK': `Message_${Date.now()}`,
+    ...message,
+  };
+};
 
 const saveMessage = async ({
   messageId,
@@ -35,6 +27,8 @@ const saveMessage = async ({
   messageTextBody,
   messageType,
   messageSubject,
+  messageDispatched,
+  messageDispatchedAt,
   version = 0,
 }) => {
   try {
@@ -48,6 +42,8 @@ const saveMessage = async ({
       messageTextBody,
       messageType,
       messageSubject,
+      messageDispatched,
+      messageDispatchedAt,
       version: newVersion,
     });
     const params = {
