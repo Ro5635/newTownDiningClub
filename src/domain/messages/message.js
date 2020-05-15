@@ -14,6 +14,8 @@ const emailMessageDefinition = Joi.object().keys({
   messageTextBody: Joi.string().required().min(1).max(3000),
   messageType: Joi.string().valid('email').required(),
   messageSubject: Joi.string().required().min(1).max(300),
+  messageDispatched: Joi.string().valid('true', 'false', 'failed').required(),
+  messageDispatchedAt: Joi.number().min(0),
   version: Joi.number().integer().min(0),
 });
 
@@ -25,6 +27,8 @@ const createMessage = async ({
   messageTextBody,
   messageType,
   messageSubject,
+  messageDispatched = 'false',
+  messageDispatchedAt,
   version = 0,
 }) => validate({
   messageId,
@@ -34,6 +38,8 @@ const createMessage = async ({
   messageTextBody,
   messageType,
   messageSubject,
+  messageDispatched,
+  messageDispatchedAt,
   version,
 }, emailMessageDefinition);
 
