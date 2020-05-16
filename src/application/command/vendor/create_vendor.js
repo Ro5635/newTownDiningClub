@@ -1,4 +1,4 @@
-import createVendor from '../../../domain/vendor/create_vendor';
+import { createVendor } from '../../../domain/vendor/vendor';
 import { logger } from '../../../infrastructure/configuration';
 import saveVendor from '../../../adapters/persistence/vendor_repository/save_vendor';
 import publishEvent from '../../../adapters/event_publisher/publishEvent';

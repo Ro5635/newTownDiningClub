@@ -2,7 +2,7 @@ import {
   logger, errors, sqs, environment,
 } from '../../../infrastructure/configuration';
 import readVendor from '../../../adapters/persistence/vendor_repository/read_vendor';
-import createVendor from '../../../domain/vendor/create_vendor';
+import { createVendor } from '../../../domain/vendor/vendor';
 import saveMessage from '../../../adapters/persistence/message_repository/save_message';
 import { createMessage } from '../../../domain/messages/message';
 

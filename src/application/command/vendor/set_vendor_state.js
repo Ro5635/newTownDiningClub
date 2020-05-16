@@ -1,7 +1,6 @@
 import { logger, errors } from '../../../infrastructure/configuration';
-import createVendor from '../../../domain/vendor/create_vendor';
+import { createVendor, applyVendorState } from '../../../domain/vendor/vendor';
 import readVendor from '../../../adapters/persistence/vendor_repository/read_vendor';
-import applyVendorStateDomainService from '../../../domain/service/vendor/apply_vendor_state';
 import saveVendor from '../../../adapters/persistence/vendor_repository/save_vendor';
 import publishEvent from '../../../adapters/event_publisher/publishEvent';
 
@@ -38,8 +37,8 @@ const setVendorStateCommandService = async ({ vendorState, vendorId }) => {
     }
 
     logger.info('Setting new Vendor State');
-    const { vendor } = await applyVendorStateDomainService({ vendor: vendorCdm, newVendorState: vendorState });
-    logger.debug(`Vendor update compleated, new vendor state: ${JSON.stringify(vendor)}`);
+    const { vendor } = await applyVendorState({ vendor: vendorCdm, newVendorState: vendorState });
+    logger.debug(`Vendor update completed, new vendor state: ${JSON.stringify(vendor)}`);
 
     logger.info('Vendor state updated, attempting save');
     await saveVendor(vendor);

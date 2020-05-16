@@ -11,7 +11,6 @@ export const handler = async ({ detail = {} }) => {
     await addVendorToTrelloList({ vendor, listName: 'newVendors' });
     logger.info('Execution of vendorCreatedAddVendorToTrello completed Successfully');
     await logger.close();
-
   } catch (error) {
     logger.error('Error caught in execution of vendorCreatedAddVendorToTrello');
     logger.error(error.message);

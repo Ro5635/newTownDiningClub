@@ -15,7 +15,7 @@ const vendorDefinition = Joi.object().keys({
   version: Joi.number().integer().min(0),
 });
 
-const createVendor = async ({
+export const createVendor = async ({
   vendorId = uuidv4(),
   name,
   vendorState = 'pendingReview',
@@ -35,5 +35,12 @@ const createVendor = async ({
   version,
 }, vendorDefinition);
 
+export const applyVendorState = async ({ vendor, newVendorState }) => {
+  const newVendor = { ...vendor, vendorState: newVendorState };
+  return { vendor: newVendor };
+};
 
-export default createVendor;
+export default {
+  createVendor,
+  applyVendorState,
+};

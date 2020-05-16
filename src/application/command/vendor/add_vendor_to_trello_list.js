@@ -1,4 +1,4 @@
-import createVendor from '../../../domain/vendor/create_vendor';
+import { createVendor } from '../../../domain/vendor/vendor';
 import createCard from '../../../adapters/zapier/trello/create_card';
 import { logger } from '../../../infrastructure/configuration';
 
