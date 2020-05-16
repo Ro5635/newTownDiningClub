@@ -4,7 +4,7 @@
   "description": "Some what Minimal code setup needed to get a AWS Lambda up for testing something, this is not a best practice thing, just a quick thing.",
   "main": "src",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "lint-fix": "eslint . --fix",
     "build": "babel src -d build && npm run lint-fix",
     "package": "sam package --s3-bucket  robertcurran-cf-templates --s3-prefix eventBridgePlay  --region eu-west-1 --output-template-file packaged.yaml --profile robertPersonalProd",
@@ -21,7 +21,8 @@
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-react-hooks": "^1.7.0"
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "jest": "^26.0.1"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "@travel-cloud/simple-lambda-logger": "^2.0.1",
     "aws-sdk": "^2.596.0",
     "node-fetch": "^2.6.0",
+    "random-test-values": "^2.0.0",
     "uuid": "^8.0.0"
   }
 }
