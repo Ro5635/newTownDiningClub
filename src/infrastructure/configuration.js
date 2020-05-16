@@ -7,6 +7,7 @@ const {
   REGION,
   NTDC_TABLE_NAME,
   VENDOR_EVENT_BUS_NAME,
+  EMAIL_DISPATCH_QUEUE,
 } = process.env;
 
 const logLevel = 'DEBUG';
@@ -22,6 +23,7 @@ const environment = {
   REGION,
   NTDC_TABLE_NAME,
   VENDOR_EVENT_BUS_NAME,
+  EMAIL_DISPATCH_QUEUE,
 };
 
 const logger = newLogger(logLevel);

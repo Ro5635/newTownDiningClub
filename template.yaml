@@ -207,16 +207,23 @@ Resources:
   sendVendorWelcomeEmailFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: build/adapters/event/send_vendor_welcome_email.handler
+      Handler: build/adapters/event/create_vendor_welcome_email.handler
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
-        Sends Welcome Email to Vendor
+        Creates Welcome Email to Vendor
       MemorySize: 128
       Timeout: 60
+      Policies:
+        - DynamoDBCrudPolicy:
+           TableName: !Ref newTownDiningClubServiceTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt emailMessageDispatchQueue.QueueName
       ReservedConcurrentExecutions: 10
       Environment:
         Variables:
+          NTDC_TABLE_NAME: !Ref newTownDiningClubServiceTable
+          EMAIL_DISPATCH_QUEUE: !Ref emailMessageDispatchQueue
           NODE_ENV: dev
 
   newVendorAcceptedRule:
@@ -236,17 +243,52 @@ Resources:
             - "accepted"
       State: 'ENABLED'
       Targets:
-        - Arn: !GetAtt sendVendorWelcomeEmailFunction.Arn
+        - Arn: !GetAtt createVendorWelcomeEmailFunction.Arn
           Id: vendorCreatedEventHandlerFunctionV1
 
   PermissionInvokeLambdaForSendVendorWelcomeEmailFunction:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
-        Ref: sendVendorWelcomeEmailFunction
+        Ref: createVendorWelcomeEmailFunction
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt newVendorAcceptedRule.Arn
+
+
+  # The Queue Fetch batch Size and Concurrent Execution limit here are being used to keep
+  # below the SES API Rate limit.
+  dispatchEmailFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: build/adapters/event/dispatch_email.handler
+      Runtime: nodejs10.x
+      CodeUri: .
+      Description: >-
+        Dispatches Emails
+      MemorySize: 128
+      Timeout: 60
+      Policies:
+        - SESCrudPolicy:
+            IdentityName: !ImportValue environmentStack--RobertCurranAutomatedEmailSESIdentity
+        - DynamoDBCrudPolicy:
+            TableName: !Ref newTownDiningClubServiceTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt emailMessageDispatchQueue.QueueName
+        - SQSPollerPolicy:
+            QueueName: !GetAtt emailMessageDispatchQueue.QueueName
+      ReservedConcurrentExecutions: 1
+      Environment:
+        Variables:
+          NTDC_TABLE_NAME: !Ref newTownDiningClubServiceTable
+          EMAIL_DISPATCH_QUEUE: !Ref emailMessageDispatchQueue
+          NODE_ENV: dev
+      Events:
+        dispatchEmailEventAvalibleOnQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt emailMessageDispatchQueue.Arn
+            BatchSize: 1
 
 
 #  allVendorEventsLogGroup:
