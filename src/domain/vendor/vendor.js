@@ -16,7 +16,8 @@ const vendorDefinition = Joi.object().keys({
 });
 
 export const createVendor = async ({
-  vendorId = uuidv4(),
+  uuidv4Fn = uuidv4,
+  vendorId = uuidv4Fn(),
   name,
   vendorState = 'pendingReview',
   cuisineType,
