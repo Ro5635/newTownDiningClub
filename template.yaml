@@ -204,7 +204,7 @@ Resources:
       SourceArn: !GetAtt vendorCreatedEventRule.Arn
 
 
-  sendVendorWelcomeEmailFunction:
+  createVendorWelcomeEmailFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: build/adapters/event/create_vendor_welcome_email.handler
