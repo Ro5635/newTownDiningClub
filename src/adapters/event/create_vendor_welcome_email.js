@@ -1,4 +1,5 @@
 import { logger } from '../../infrastructure/configuration';
+import sendVendorWelcomeEmailCommandService from '../../application/command/messages/create_vendor_welcome_email';
 
 export const handler = async ({ detail = {} }) => {
   try {
@@ -6,7 +7,10 @@ export const handler = async ({ detail = {} }) => {
     logger.debug('Invoked with event detail:');
     logger.debug(JSON.stringify(detail));
 
-    logger.info('NOT IMPLEMENTED!');
+    const { vendor } = detail;
+    const { vendorId } = vendor;
+
+    await sendVendorWelcomeEmailCommandService({ vendorId });
 
     logger.info('Execution Of sendVendorWelcomeEmail Completed Successfully');
     await logger.close();
