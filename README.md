@@ -1,22 +1,44 @@
-# Bare Minimum JS Lambda 🥦
+# New Town Dining Club 🥦
 
-This is some a what Minimal code setup needed to get a AWS Lambda up for testing something, this was once much more minimal, if you want the non linted, babled ES6 etc version then see the minimalNoBabel branch of this repo.
+A Fictional dining club in New Town Birmingham, used to exercise usage of EventBridge.
 
-This is set up as an HTTP API, the routing for the endpoints is defined within the SAM template.
+I wrote a [blog about this](https://medium.com/@robertcurran5635/test-driving-the-aws-serverless-event-router-cc031aec00fd) 
 
-This was repo created and is maintained to be used as a common building block in my projects.
+All of the infrastructure required to run this is in the Cloud Formation [template.yaml](https://github.com/Ro5635/newTownDiningClub/blob/master/template.yaml) file.
+
+Emails are created and stored in dynamoDB with the messageId added to a dispatchQueue, 
+this dispatch queue is handled by lambda which will read of events from the dispatch 
+queue at a sedate 🤞 rate and dispatch them using aws SES.
+
+This service uses a single table with heterogeneous keys, so see the data design for the 
+key names.
+
+### API:
+
+#### POST: {API URL}/vendor
+Create a new Vendor
+
+#### POST: {API URL}/webhooks/vendor?source=trello
+
+Update the state of a vendor.
+
+### Events:
+
+#### vendorCreated
+Published on the creation of a new vendor with the details of vendor and its vendorId
+
+### vendorUpdated
+Published on updates to an existing vendor, contains past and new state.
+
+ 
 
 Build and lint:
 ```
 npm run build
 ```
 
-Package:
+Publish:
 ```
-sam package --s3-bucket your-cf-bucket  --output-template-file packaged.yaml
+npm run publish
 ```
 
-Deploy:
-```
- sam deploy --template-file /FULL/PATH/TO/packaged.yaml --stack-name YOUR_STACK_NAME --region eu-west-1 --capabilities CAPABILITY_IAM
-```
