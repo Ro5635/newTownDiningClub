@@ -10,13 +10,14 @@ const { ValidationConstraintError } = errors;
 export const createVendor = async ({
   body = {},
 }) => {
-  logger.info('Handling call to POST /vendor');
   try {
+    logger.info('Handling call to POST /vendor');
     const parsedBody = JSON.parse(body);
     const { vendor } = parsedBody;
 
     const newVendor = await createVendorCommandService(vendor);
 
+    await logger.close();
     return {
       statusCode: 200,
       body: JSON.stringify(newVendor),
@@ -27,6 +28,7 @@ export const createVendor = async ({
 
     if (error instanceof ValidationConstraintError) {
       logger.error('Caught ValidationConstraintError');
+      logger.error(error.message);
       logger.error(error.stack);
       logger.error('Responding 400 Invalid Vendor Supplied');
       await logger.close();
@@ -36,6 +38,10 @@ export const createVendor = async ({
       };
     }
 
+    logger.error('Unrecognised error');
+    logger.error(error.message);
+    logger.error(error.stack);
+    logger.error('Responding StatusCode 500');
     return {
       statusCode: 500,
       headers: corsHeaders,

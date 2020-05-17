@@ -49,6 +49,7 @@ export const vendorUpdatedWebHookHandler = async ({
     await setVendorStateCommandService({ vendorState, vendorId });
 
     logger.info('restAdapter returning success 201 to caller');
+    await logger.close();
     return {
       statusCode: 201,
       headers: corsHeaders,
@@ -58,6 +59,7 @@ export const vendorUpdatedWebHookHandler = async ({
       logger.error('Invalid Request');
       logger.error(error.message);
       logger.error(error.stack);
+      await logger.close();
       return {
         statusCode: 400,
         headers: corsHeaders,
@@ -67,6 +69,7 @@ export const vendorUpdatedWebHookHandler = async ({
       logger.error(error.message);
       logger.error(error.stack);
       logger.error('Returning StatusCode 500 to caller');
+      await logger.close();
       return {
         statusCode: 500,
         headers: corsHeaders,
@@ -77,6 +80,7 @@ export const vendorUpdatedWebHookHandler = async ({
     logger.error(error.message);
     logger.error(error.stack);
     logger.error('Returning Status 500 to caller');
+    await logger.close();
     return {
       statusCode: 500,
       headers: corsHeaders,
