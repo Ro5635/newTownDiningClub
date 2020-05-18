@@ -1,0 +1,35 @@
+# First Play With CircleCI
+
+
+version: 2.1
+jobs:
+  build_app:
+    executor: aws-serverless/default
+    steps:
+      - checkout
+      - aws-serverless/install
+      - node/install:
+          install-yarn: false
+          node-version: latest
+      - run: npm ci
+      # Fix the timestamps 🔥
+      - run: find ./node_modules/ -type f -exec touch -t 201601011200 '{}' \;
+      - run: npm run build
+      - run: npm run test
+      - run: rm -r ./src/
+      - run: zip builtAssets.zip -r ./
+      - store_artifacts:
+          path: ./builtAssets.zip
+          destination: builtAssets
+
+      # Running this directly here in the same job while I sort the IAM permissions this will need etc...
+      - run: sam package --s3-bucket  robertcurran-cf-templates --s3-prefix circleCiTest  --region eu-west-1 --output-template-file packaged.yaml
+      - run: sam deploy --template-file ./packaged.yaml --stack-name eventBridgePlay --region eu-west-1 --capabilities CAPABILITY_IAM
+orbs:
+  aws-serverless: circleci/aws-serverless@1.0.2
+  node: circleci/node@2.0.2
+
+workflows:
+  my-workflow:
+    jobs:
+      - build_app
