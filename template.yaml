@@ -1,3 +1,16 @@
+# Infrastructure Template
+#
+# Defines the infrastructure required to run the fictional newTownDining Club
+# This includes:
+#   DynamoDB table
+#   vendorEvent event bus
+#   emailDispatch Queue
+#   emailDispatch DLQ
+#   emailDispatch DLQ CloudWatch Alarm
+#   NewTownDiningCLub RestAPI and constituent resources
+#   EventBridge vendor event Trigger Rules
+#   Event handler functions associated with vendor events
+
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Mappings:
@@ -172,13 +185,10 @@ Resources:
       Runtime: nodejs10.x
       CodeUri: .
       Description: >-
-        Handles the vendorCreatedEvent
+        Adds Vendor To the vendorCreated list within Trello
       MemorySize: 128
       Timeout: 60
       ReservedConcurrentExecutions: 10
-      Environment:
-        Variables:
-          NODE_ENV: dev
 
   vendorCreatedEventRule:
     Type: AWS::Events::Rule
@@ -192,7 +202,7 @@ Resources:
       State: 'ENABLED'
       Targets:
         - Arn: !GetAtt vendorCreatedAddVendorToTrelloFunction.Arn
-          Id: vendorCreatedEventHandlerFunctionV1
+          Id: vendorCreatedAddVendorToTrelloFunction
 
   PermissionInvokeLambdaForVendorCreatedAddVendorToTrelloFunction:
     Type: AWS::Lambda::Permission
@@ -244,7 +254,7 @@ Resources:
       State: 'ENABLED'
       Targets:
         - Arn: !GetAtt createVendorWelcomeEmailFunction.Arn
-          Id: vendorCreatedEventHandlerFunctionV1
+          Id: createVendorWelcomeEmailFunction
 
   PermissionInvokeLambdaForSendVendorWelcomeEmailFunction:
     Type: AWS::Lambda::Permission
